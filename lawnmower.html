@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lawnmower Game</title>
     <style>
-        /* Ensures the game takes up every pixel of the display area */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
             overflow: hidden;
-            background-color: #ffffff;
+            /* Changed background to light grey so black text is visible */
+            background-color: #f0f0f0; 
         }
         
         iframe {
@@ -22,23 +22,20 @@
             display: block;
         }
 
-        /* Loading indicator positioned behind the iframe */
         .loading-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #4CAF50; /* Grass Green */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 20px;
-            font-weight: bold;
+            color: #2e7d32;
+            font-family: sans-serif;
             z-index: -1;
         }
     </style>
 </head>
 <body>
 
-    <div class="loading-text">Mowing the lawn...</div>
+    <div class="loading-text">Preparing the field...</div>
 
     <iframe 
         id="game-frame"
@@ -48,10 +45,8 @@
     </iframe>
 
     <script>
-        // Helps ensure the iframe catches your keyboard inputs immediately
         window.onload = function() {
-            const frame = document.getElementById('game-frame');
-            frame.focus();
+            document.getElementById('game-frame').focus();
         };
     </script>
 
