@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minesweeper</title>
+    <style>
+        body { background: #2c3e50; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; color: white; }
+        #stats { margin-bottom: 10px; font-size: 20px; }
+        #grid { border: 5px solid #34495e; display: grid; grid-template-columns: repeat(10, 30px); grid-template-rows: repeat(10, 30px); }
+        .cell { width: 30px; height: 30px; background: #95a5a6; border: 1px solid #7f8c8d; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; color: #2c3e50; }
+        .cell.revealed { background: #ecf0f1; cursor: default; }
+        .cell.mine { background: #e74c3c; }
+        button { margin-top: 20px; padding: 10px 20px; cursor: pointer; background: #27ae60; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="stats">Mines: 10</div>
+    <div id="grid"></div>
+    <button onclick="initGame()">Restart Game</button>
+
+    <script>
+        const size = 10;
+        const mineCount = 10;
+        let grid = [];
+        const gridElement = document.getElementById('grid');
+
+        function initGame() {
+            gridElement.innerHTML = '';
+            grid = [];
+            for (let r = 0; r < size; r++) {
+                grid[r] = [];
+                for (let c = 0; c < size; c++) {
+                    const cell = { isMine: false, revealed: false, count: 0, element: document.createElement('div') };
+                    cell.element.classList.add('cell');
+                    cell.element.onclick = () => reveal(r, c);
+                    gridElement.appendChild(cell.element);
+                    grid[r][c] = cell;
+                }
+            }
+            for (let i = 0; i < mineCount; i++) {
+                let r = Math.floor(Math.random() * size), c = Math.floor(Math.random() * size);
+                if (grid[r][c].isMine) i--; else grid[r][c].isMine = true;
+            }
+        }
+
+        function reveal(r, c) {
+            if (r < 0 || r >= size || c < 0 || c >= size || grid[r][c].revealed) return;
+            grid[r][c].revealed = true;
+            grid[r][c].element.classList.add('revealed');
+            if (grid[r][c].isMine) {
+                grid[r][c].element.classList.add('mine');
+                alert('Game Over!');
+                initGame();
+                return;
+            }
+            let mines = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (grid[r+i]?.[c+j]?.isMine) mines++;
+                }
+            }
+            if (mines > 0) grid[r][c].element.innerText = mines;
+            else {
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) reveal(r+i, c+j);
+                }
+            }
+        }
+        initGame();
+    </script>
+</body>
+</html>
