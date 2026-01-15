@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Game Portal</title>
+    <style>
+        body { margin: 0; display: flex; height: 100vh; font-family: 'Segoe UI', sans-serif; }
+        
+        #sidebar {
+            width: 220px;
+            background-color: #f4f4f4;
+            border-right: 2px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 12px;
+        }
+
+        h2 { font-size: 1.2rem; color: #333; }
+
+        .game-btn {
+            padding: 12px;
+            background-color: white;
+            color: #333;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+
+        .game-btn:hover {
+            background-color: #007bff;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        #main-view { flex-grow: 1; background-color: #fff; }
+
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h2>My Games</h2>
+        <a href="snowrider.html" target="display" class="game-btn">Snow Rider 3D</a>
+        <a href="snake.html" target="display" class="game-btn">Play Snake</a>
+    </div>
+
+    <div id="main-view">
+        <iframe name="display" src="about:blank" allowfullscreen></iframe>
+    </div>
+
+</body>
+</html>
