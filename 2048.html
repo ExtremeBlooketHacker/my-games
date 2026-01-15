@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #field {
+            border: 5px solid #bbada0;
+            background-color: #bbada0;
+            border-radius: 6px;
+            border-collapse: separate;
+            border-spacing: 10px;
+        }
+        .cell {
+            width: 80px;
+            height: 80px;
+            border-radius: 3px;
+            font-size: 25px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            color: #776e65; /* Default number color */
+        }
+        h1 { margin-bottom: 10px; color: #eee; }
+        .instructions { color: #aaa; margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>2048</h1>
+    <table id="field"></table>
+    <div class="instructions">Use your Arrow Keys to merge tiles!</div>
+
+    <script>
+        var size = 4;
+        var htmlElements;
+        var cells;
+
+        function createField() {
+            if(htmlElements) return;
+            htmlElements = [];
+            var table = document.getElementById('field');
+            for (var y = 0; y < size; y++) {
+                var tr = document.createElement('tr');
+                var trElements = [];
+                for (var x = 0; x < size; x++) {
+                    var td = document.createElement('td');
+                    td.setAttribute('class', 'cell');
+                    tr.appendChild(td);
+                    trElements.push(td);
+                }
+                htmlElements.push(trElements);
+                table.appendChild(tr);
+            }
+        }
+
+        function createCells() {
+            cells = [];
+            for(var y = 0; y < size; y++) {
+                cells.push(new Array(size).fill(0));
+            }
+        }
+
+        function generateInEmptyCell() {
+            var x, y;
+            var emptyCells = [];
+            for(var r = 0; r < size; r++) {
+                for(var c = 0; c < size; c++) {
+                    if(cells[r][c] === 0) emptyCells.push({x:c, y:r});
+                }
+            }
+            if(emptyCells.length > 0) {
+                var randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                cells[randomCell.y][randomCell.x] = Math.random() >= 0.9 ? 4 : 2;
+            }
+        }
+
+        function draw() {
+            for(var y = 0; y < size; y++) {
+                for (var x = 0; x < size; x++) {
+                    var td = htmlElements[y][x];
+                    var v = cells[y][x];
+                    td.innerHTML = v === 0 ? '' : String(v);
+                    if (v === 0) {
+                        td.style.backgroundColor = 'rgba(238, 228, 218, 0.35)';
+                    } else {
+                        // Change color based on value
+                        var colors = {
+                            2: '#eee4da', 4: '#ede0c8', 8: '#f2b179', 16: '#f59563',
+                            32: '#f67c5f', 64: '#f65e3b', 128: '#edcf72', 256: '#edcc61',
+                            512: '#edc850', 1024: '#edc53f', 2048: '#edc22e'
+                        };
+                        td.style.backgroundColor = colors[v] || '#3c3a32';
+                        td.style.color = v <= 4 ? '#776e65' : '#f9f6f2';
+                    }
+                }
+            }
+        }
+
+        function slide(array, size) {
+            function filterEmpty(a) { return a.filter(x => x !== 0); }
+            array = filterEmpty(array);
+            if(array.length > 0) {
+                for(var i = 0; i < array.length - 1; i++) {
+                    if(array[i] === array[i + 1]) {
+                        array[i] *= 2;
+                        array[i + 1] = 0;
+                    }
+                }
+            }
+            array = filterEmpty(array);
+            while (array.length < size) { array.push(0); }
+            return array;
+        }
+
+        function slideLeft() {
+            var changed = false;
+            for(var y = 0; y < size; y++) {
+                var old = Array.from(cells[y]);
+                cells[y] = slide(cells[y], size);
+                changed = changed || (cells[y].join(',') !== old.join(','));
+            }
+            return changed;
+        }
+
+        function swap(x1, y1, x2, y2) {
+            var tmp = cells[y1][x1];
+            cells[y1][x1] = cells[y2][x2];
+            cells[y2][x2] = tmp;
+        }
+
+        function mirror() {
+            for (var y = 0; y < size; y++) {
+                for (var xLeft = 0, xRight = size - 1; xLeft < xRight; xLeft++, xRight--) {
+                    swap(xLeft, y, xRight, y);
+                }
+            }
+        }
+
+        function transpose() {
+            for(var y = 0; y < size; y++){
+                for (var x = 0; x < y; x++) {
+                    swap(x, y, y, x);
+                }
+            }
+        }
+
+        function moveLeft() { return slideLeft(); }
+        function moveRight() { mirror(); var c = moveLeft(); mirror(); return c; }
+        function moveUp() { transpose(); var c = moveLeft(); transpose(); return c; }
+        function moveDown() { transpose(); var c = moveRight(); transpose(); return c; }
+
+        function isGameOver() {
+            for (var y = 0; y < size; y++) {
+                for (var x = 0; x < size; x++) {
+                    if (cells[y][x] === 0) return false;
+                }
+            }
+            for (var y = 0; y < size; y++) {
+                for (var x = 0; x < size; x++) {
+                    var c = cells[y][x];
+                    if (y < size - 1 && c === cells[y + 1][x]) return false;
+                    if (x < size - 1 && c === cells[y][x + 1]) return false;
+                }
+            }
+            return true;
+        }
+
+        document.addEventListener('keydown', function (e) {
+            var ok = false;
+            switch (e.keyCode) {
+                case 40: ok = moveDown(); break;
+                case 38: ok = moveUp(); break;
+                case 37: ok = moveLeft(); break;
+                case 39: ok = moveRight(); break;
+                default: return;
+            }
+            if(ok) {
+                generateInEmptyCell();
+                draw();
+                if(isGameOver()) {
+                    setTimeout(function () { alert('Game Over'); init(); }, 500);
+                }
+            }
+            e.preventDefault(); // Stop page from scrolling
+        });
+
+        function init() {
+            createField();
+            createCells();
+            generateInEmptyCell();
+            generateInEmptyCell();
+            draw();
+        }
+
+        init();
+    </script>
+</body>
+</html>
