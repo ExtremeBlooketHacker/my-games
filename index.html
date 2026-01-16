@@ -4,12 +4,12 @@
     <title>My Game Portal</title>
     <style>
         :root {
-            /* Default: Midnight Dark */
-            --bg-color: #000000; --sidebar-bg: #111111; --text-color: #ffffff;
-            --btn-bg: #222; --btn-border: #444; --accent: #007bff;
+            /* Default: Winter Frost */
+            --bg-color: #050b14; --sidebar-bg: #0a1421; --text-color: #00f2ff;
+            --btn-bg: #102136; --btn-border: #00d9ff; --accent: #00f2ff;
         }
 
-        /* THEME SELECTIONS - Like a Set of Coordinates */
+        /* THEME SELECTIONS */
         [data-theme="winter"] {
             --bg-color: #050b14; --sidebar-bg: #0a1421; --text-color: #00f2ff;
             --btn-bg: #102136; --btn-border: #00d9ff; --accent: #00f2ff;
@@ -67,14 +67,14 @@
         }
 
         .game-btn:hover {
-            background-color: var(--accent); color: white;
+            background-color: var(--accent); color: #000; /* Contrast against cyan */
             transform: translateY(-2px); border-color: var(--accent);
-            box-shadow: 0 4px 15px var(--accent); /* Glow effect */
+            box-shadow: 0 0 15px var(--accent); /* Ice glow */
         }
 
         .ctrl-btn {
             padding: 8px; cursor: pointer; border-radius: 5px; border: none;
-            background: var(--accent); color: white; font-weight: bold;
+            background: var(--accent); color: #000; font-weight: bold;
         }
 
         #main-view { flex-grow: 1; height: 100vh; position: relative; }
@@ -86,13 +86,16 @@
         }
     </style>
 </head>
-<body data-theme="emerald"> <div id="sidebar">
+<body data-theme="winter">
+
+    <div id="sidebar">
         <h2>Theme</h2>
         <select id="theme-select" onchange="changeTheme(this.value)">
-            <option value="emerald">Emerald Forest</option>
+            <option value="winter">Winter Frost</option>
             <option value="dark">Midnight Dark</option>
             <option value="light">Classic Light</option>
             <option value="blood">Blood Red</option>
+            <option value="emerald">Emerald Forest</option>
             <option value="cyber">Cyberpunk</option>
         </select>
         
