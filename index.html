@@ -3,7 +3,6 @@
 <head>
     <title>My Game Portal</title>
     <style>
-        /* 1. LOCK THE BODY: Prevents the entire website from scrolling */
         body { 
             margin: 0; 
             display: flex; 
@@ -11,21 +10,20 @@
             width: 100vw;
             font-family: 'Segoe UI', sans-serif; 
             overflow: hidden; 
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s;
         }
 
-        /* LIGHT MODE COLORS */
+        /* THEME STYLES */
         body.light { background-color: #ffffff; color: #333; }
         body.light #sidebar { background-color: #f4f4f4; border-right: 2px solid #ddd; }
         body.light .game-btn { background-color: white; color: #333; border: 1px solid #ccc; }
 
-        /* DARK MODE COLORS */
         body.dark { background-color: #1a1a1a; color: #e0e0e0; }
         body.dark #sidebar { background-color: #252525; border-right: 2px solid #444; }
         body.dark .game-btn { background-color: #333; color: #e0e0e0; border: 1px solid #555; }
         body.dark h2 { color: #fff; }
 
-        /* 2. SCROLLABLE SIDEBAR */
+        /* SIDEBAR LOGIC */
         #sidebar {
             width: 220px;
             display: flex;
@@ -35,7 +33,12 @@
             height: 100vh;
             overflow-y: auto; 
             box-sizing: border-box;
-            flex-shrink: 0;
+            transition: margin-left 0.3s ease; /* Smooth sliding */
+        }
+
+        /* Hidden state for Full Screen */
+        #sidebar.hidden {
+            margin-left: -220px;
         }
 
         h2 { font-size: 1.1rem; margin-top: 0; margin-bottom: 5px; }
@@ -47,7 +50,6 @@
             text-align: center;
             transition: 0.2s;
             font-weight: bold;
-            flex-shrink: 0;
         }
 
         .game-btn:hover {
@@ -56,10 +58,16 @@
             transform: translateY(-2px);
         }
 
-        /* TOGGLE SWITCH STYLING */
-        #theme-toggle {
-            padding: 8px;
+        /* CONTROL BUTTONS */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             margin-bottom: 10px;
+        }
+
+        .ctrl-btn {
+            padding: 8px;
             cursor: pointer;
             border-radius: 5px;
             border: none;
@@ -71,19 +79,35 @@
         #main-view { 
             flex-grow: 1; 
             height: 100vh;
-            background-color: transparent;
+            position: relative;
         }
 
         iframe { width: 100%; height: 100%; border: none; }
+
+        /* FLOATING RESTORE BUTTON - Only visible when sidebar is hidden */
+        #restore-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            display: none;
+            opacity: 0.5;
+        }
+        #restore-btn:hover { opacity: 1; }
     </style>
 </head>
-<body class="dark"> <div id="sidebar">
+<body class="dark">
+
+    <div id="sidebar">
         <h2>Settings</h2>
-        <button id="theme-toggle" onclick="toggleTheme()">Toggle Light/Dark</button>
+        <div class="controls">
+            <button class="ctrl-btn" onclick="toggleTheme()">Toggle Dark/Light</button>
+            <button class="ctrl-btn" onclick="toggleFullScreen()" style="background: #28a745;">Full Screen Mode</button>
+        </div>
         
         <hr style="width:100%; border: 0; border-top: 1px solid #555;">
         
-        <h2>Games</h2>
+        <h2>My Games</h2>
         <a href="2048.html" target="display" class="game-btn">2048</a>
         <a href="basketball.html" target="display" class="game-btn">Basketball Stars</a>
         <a href="hexgl.html" target="display" class="game-btn">HexGL</a>
@@ -95,33 +119,39 @@
         <a href="slope.html" target="display" class="game-btn">Slope</a>
         <a href="snake.html" target="display" class="game-btn">Play Snake</a>
         <a href="snowrider.html" target="display" class="game-btn">Snow Rider 3D</a>
-        <a href="tetris.html" target="display" class="game-btn">Tetris</a
+        <a href="tetris.html" target="display" class="game-btn">Tetris</a>
     </div>
 
     <div id="main-view">
+        <button id="restore-btn" class="ctrl-btn" onclick="toggleFullScreen()">Show Menu</button>
         <iframe name="display" src="about:blank" allowfullscreen></iframe>
     </div>
 
     <script>
-        // 1. Theme Toggle Function
         function toggleTheme() {
-            const body = document.body;
-            if (body.classList.contains('dark')) {
-                body.classList.remove('dark');
-                body.classList.add('light');
+            document.body.classList.toggle('dark');
+            document.body.classList.toggle('light');
+        }
+
+        function toggleFullScreen() {
+            const sidebar = document.getElementById('sidebar');
+            const restoreBtn = document.getElementById('restore-btn');
+            sidebar.classList.toggle('hidden');
+            
+            // Show the "Show Menu" button if the sidebar is hidden
+            if (sidebar.classList.contains('hidden')) {
+                restoreBtn.style.display = 'block';
             } else {
-                body.classList.remove('light');
-                body.classList.add('dark');
+                restoreBtn.style.display = 'none';
             }
         }
 
-        // 2. Prevent Arrow Key and Spacebar Scrolling
+        // Prevent Scroll
         window.addEventListener("keydown", function(e) {
             if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) {
                 e.preventDefault();
             }
         }, false);
     </script>
-
 </body>
 </html>
