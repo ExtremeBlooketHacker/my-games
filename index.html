@@ -6,7 +6,6 @@
     
     <style>
         :root {
-            /* Default: Midnight Dark */
             --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0;
             --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff;
         }
@@ -24,7 +23,7 @@
             margin: 0; display: flex; height: 100vh; width: 100vw;
             font-family: 'Segoe UI', sans-serif; overflow: hidden; 
             background-color: var(--bg-color); color: var(--text-color);
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
         }
 
         #sidebar {
@@ -35,6 +34,15 @@
         }
 
         #sidebar.hidden { margin-left: -240px; }
+
+        /* THEMED DROPDOWN MENU */
+        #theme-select {
+            padding: 10px; border-radius: 8px; border: 1px solid var(--btn-border);
+            background-color: var(--btn-bg); color: var(--text-color);
+            font-size: 0.9rem; font-weight: bold; cursor: pointer; outline: none;
+            appearance: none; /* Removes default browser styling */
+            -webkit-appearance: none;
+        }
 
         #search-bar {
             padding: 10px; border-radius: 8px; border: 1px solid var(--btn-border);
@@ -49,23 +57,27 @@
             width: 100%; display: block; margin-bottom: 5px; cursor: pointer;
         }
 
-        .game-btn:hover { background-color: var(--accent); color: white; }
+        .game-btn:hover { background-color: var(--accent); color: white; transform: translateY(-2px); }
 
         .ctrl-btn {
             padding: 8px; cursor: pointer; border-radius: 5px; border: none;
             background: var(--accent); color: white; font-weight: bold;
         }
 
-        #main-view { flex-grow: 1; height: 100vh; position: relative; background: #000; }
+        /* MAIN VIEW matches background color now */
+        #main-view { 
+            flex-grow: 1; height: 100vh; position: relative; 
+            background-color: var(--bg-color); /* This fixes the empty screen color */
+        }
         
         #restore-btn { position: absolute; top: 10px; left: 10px; z-index: 1000; display: none; }
-        iframe { width: 100%; height: 100%; border: none; }
+        iframe { width: 100%; height: 100%; border: none; background: transparent; }
     </style>
 </head>
 <body data-theme="dark">
 
     <div id="sidebar">
-        <h2>Settings</h2>
+        <h2>Appearance</h2>
         <select id="theme-select" onchange="changeTheme(this.value)">
             <option value="dark">Midnight Dark</option>
             <option value="femboy">Pastel Femboy</option>
@@ -80,7 +92,7 @@
         
         <hr style="width:100%; border: 0; border-top: 1px solid var(--btn-border);">
         
-        <h2>Search</h2>
+        <h2>Find Game</h2>
         <input type="text" id="search-bar" placeholder="Search games..." onkeyup="filterGames()">
 
         <div id="game-list">
@@ -88,15 +100,9 @@
             <button onclick="loadGame('basketball.html')" class="game-btn">Basketball Stars</button>
             <button onclick="loadGame('hexgl.html')" class="game-btn">HexGL</button>
             <button onclick="loadGame('breaklock.html')" class="game-btn">Breaklock</button>
-            <button onclick="loadGame('lawnmower.html')" class="game-btn">Lawnmower Game</button>
-            <button onclick="loadGame('minesweeper.html')" class="game-btn">Minesweeper</button>
-            <button onclick="loadGame('overflowing.html')" class="game-btn">Overflowing Palette</button>
-            <button onclick="loadGame('polytrack.html')" class="game-btn">Poly Track</button>
             <button onclick="loadGame('slope.html')" class="game-btn">Slope</button>
-            <button onclick="loadGame('snake.html')" class="game-btn">Play Snake</button>
-            <button onclick="loadGame('snowrider.html')" class="game-btn">Snow Rider 3D</button>
             <button onclick="loadGame('tetris.html')" class="game-btn">Tetris</button>
-        </div>
+            </div>
     </div>
 
     <div id="main-view">
@@ -115,20 +121,13 @@
             newFrame.src = url;
             newFrame.setAttribute('allowfullscreen', '');
             container.appendChild(newFrame);
-            // Gives the game focus so keys work instantly
             newFrame.onload = () => { newFrame.focus(); };
         }
 
-        // Optimized Key Prevention
         window.addEventListener("keydown", function(e) {
-            // If typing in search, let all keys work normally
             if (document.activeElement.id === "search-bar") return;
-
-            // Block only keys that cause browser scrolling/jumping
             const blockList = ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab"];
-            if (blockList.includes(e.code)) {
-                e.preventDefault();
-            }
+            if (blockList.includes(e.code)) { e.preventDefault(); }
         }, false);
 
         function changeTheme(themeName) { document.body.setAttribute('data-theme', themeName); }
