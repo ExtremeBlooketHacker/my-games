@@ -1,53 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Game Portal</title>
+    <title>My Drive - Google Drive</title>
+    <link rel="icon" type="image/x-icon" href="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png">
+    
     <style>
         :root {
-            /* Default Starting Theme: Midnight Dark */
             --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0;
             --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff;
+            --cursor: default;
         }
 
-        /* THEME SELECTIONS */
-        [data-theme="dark"] {
-            --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0;
-            --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff;
-        }
-        [data-theme="femboy"] {
-            --bg-color: #F8F7BA; --sidebar-bg: #F5D2D2; --text-color: #5a5a5a;
-            --btn-bg: #BDE3C3; --btn-border: #A3CCDA; --accent: #A3CCDA;
-        }
-        [data-theme="peach"] {
-            --bg-color: #FBEF76; --sidebar-bg: #FEC288; --text-color: #FA5C5C;
-            --btn-bg: #fdf0d5; --btn-border: #FD8A6B; --accent: #FA5C5C;
-        }
-        [data-theme="winter"] {
-            --bg-color: #050b14; --sidebar-bg: #0a1421; --text-color: #00f2ff;
-            --btn-bg: #102136; --btn-border: #00d9ff; --accent: #00f2ff;
-        }
-        [data-theme="light"] {
-            --bg-color: #ffffff; --sidebar-bg: #f4f4f4; --text-color: #333;
-            --btn-bg: #fff; --btn-border: #ccc; --accent: #007bff;
-        }
-        [data-theme="blood"] {
-            --bg-color: #000000; --sidebar-bg: #1a0000; --text-color: #ff4d4d;
-            --btn-bg: #2b0000; --btn-border: #800000; --accent: #ff0000;
-        }
-        [data-theme="emerald"] {
-            --bg-color: #051005; --sidebar-bg: #0a1a0a; --text-color: #7dff7d;
-            --btn-bg: #122b12; --btn-border: #1e4d1e; --accent: #2ecc71;
-        }
-        [data-theme="cyber"] {
-            --bg-color: #0d0221; --sidebar-bg: #0f0844; --text-color: #00f2ff;
-            --btn-bg: #1a1b41; --btn-border: #00f2ff; --accent: #ff00ff;
-        }
+        /* THEME SELECTIONS WITH CUSTOM CURSORS */
+        [data-theme="dark"] { --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0; --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff; --cursor: default; }
+        [data-theme="femboy"] { --bg-color: #F8F7BA; --sidebar-bg: #F5D2D2; --text-color: #5a5a5a; --btn-bg: #BDE3C3; --btn-border: #A3CCDA; --accent: #A3CCDA; --cursor: cell; }
+        [data-theme="peach"] { --bg-color: #FBEF76; --sidebar-bg: #FEC288; --text-color: #FA5C5C; --btn-bg: #fdf0d5; --btn-border: #FD8A6B; --accent: #FA5C5C; --cursor: pointer; }
+        [data-theme="winter"] { --bg-color: #050b14; --sidebar-bg: #0a1421; --text-color: #00f2ff; --btn-bg: #102136; --btn-border: #00d9ff; --accent: #00f2ff; --cursor: crosshair; }
+        [data-theme="blood"] { --bg-color: #000000; --sidebar-bg: #1a0000; --text-color: #ff4d4d; --btn-bg: #2b0000; --btn-border: #800000; --accent: #ff0000; --cursor: crosshair; }
+        [data-theme="emerald"] { --bg-color: #051005; --sidebar-bg: #0a1a0a; --text-color: #7dff7d; --btn-bg: #122b12; --btn-border: #1e4d1e; --accent: #2ecc71; --cursor: default; }
+        [data-theme="cyber"] { --bg-color: #0d0221; --sidebar-bg: #0f0844; --text-color: #00f2ff; --btn-bg: #1a1b41; --btn-border: #00f2ff; --accent: #ff00ff; --cursor: help; }
 
         body { 
             margin: 0; display: flex; height: 100vh; width: 100vw;
             font-family: 'Segoe UI', sans-serif; overflow: hidden; 
             background-color: var(--bg-color); color: var(--text-color);
-            transition: all 0.2s ease;
+            transition: all 0.2s ease; cursor: var(--cursor);
         }
 
         #sidebar {
@@ -59,48 +36,38 @@
 
         #sidebar.hidden { margin-left: -240px; }
 
-        h2 { font-size: 1rem; margin: 10px 0 5px 0; }
-
-        /* SEARCH BAR STYLING */
         #search-bar {
             padding: 10px; border-radius: 8px; border: 1px solid var(--btn-border);
             background-color: var(--btn-bg); color: var(--text-color);
             font-size: 0.9rem; margin-bottom: 5px; outline: none;
-        }
-        #search-bar:focus { border-color: var(--accent); }
-
-        #theme-select {
-            padding: 8px; border-radius: 5px; background: var(--btn-bg);
-            color: var(--text-color); border: 1px solid var(--btn-border);
-            cursor: pointer; font-weight: bold;
         }
 
         .game-btn {
             padding: 12px; text-decoration: none; border-radius: 8px;
             text-align: center; transition: 0.2s; font-weight: bold;
             background-color: var(--btn-bg); color: var(--text-color);
-            border: 1px solid var(--btn-border);
-            display: block; /* Important for filtering */
+            border: 1px solid var(--btn-border); cursor: inherit;
+            width: 100%; display: block; margin-bottom: 5px;
         }
 
-        .game-btn:hover {
-            background-color: var(--accent); color: white;
-            transform: translateY(-2px); border-color: var(--accent);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
+        .game-btn:hover { background-color: var(--accent); color: white; transform: translateY(-2px); }
 
         .ctrl-btn {
             padding: 8px; cursor: pointer; border-radius: 5px; border: none;
             background: var(--accent); color: white; font-weight: bold;
         }
 
-        #main-view { flex-grow: 1; height: 100vh; position: relative; }
-        iframe { width: 100%; height: 100%; border: none; }
+        #main-view { flex-grow: 1; height: 100vh; position: relative; background: #fff; }
         
-        #restore-btn {
-            position: absolute; top: 10px; left: 10px; z-index: 1000;
-            display: none; opacity: 0.8;
+        /* PANIC LAYER: Google Drive Fake-out */
+        #panic-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: none; z-index: 9999;
+            flex-direction: column; justify-content: center; align-items: center;
         }
+
+        #restore-btn { position: absolute; top: 10px; left: 10px; z-index: 1000; display: none; opacity: 0.8; }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body data-theme="dark">
@@ -112,7 +79,6 @@
             <option value="femboy">Pastel Femboy</option>
             <option value="peach">Sunset Peach</option>
             <option value="winter">Winter Frost</option>
-            <option value="light">Classic Light</option>
             <option value="blood">Blood Red</option>
             <option value="emerald">Emerald Forest</option>
             <option value="cyber">Cyberpunk</option>
@@ -122,37 +88,69 @@
         
         <hr style="width:100%; border: 0; border-top: 1px solid var(--btn-border);">
         
-        <h2>Find a Game</h2>
+        <h2>Search</h2>
         <input type="text" id="search-bar" placeholder="Search games..." onkeyup="filterGames()">
 
         <div id="game-list">
-            <a href="2048.html" target="display" class="game-btn">2048</a>
-            <a href="basketball.html" target="display" class="game-btn">Basketball Stars</a>
-            <a href="hexgl.html" target="display" class="game-btn">HexGL</a>
-            <a href="breaklock.html" target="display" class="game-btn">Breaklock</a>
-            <a href="lawnmower.html" target="display" class="game-btn">Lawnmower Game</a>
-            <a href="minesweeper.html" target="display" class="game-btn">Minesweeper</a>
-            <a href="overflowing.html" target="display" class="game-btn">Overflowing Palette</a>
-            <a href="polytrack.html" target="display" class="game-btn">Poly Track</a>
-            <a href="slope.html" target="display" class="game-btn">Slope</a>
-            <a href="snake.html" target="display" class="game-btn">Play Snake</a>
-            <a href="snowrider.html" target="display" class="game-btn">Snow Rider 3D</a>
-            <a href="tetris.html" target="display" class="game-btn">Tetris</a>
+            <button onclick="loadGame('2048.html')" class="game-btn">2048</button>
+            <button onclick="loadGame('basketball.html')" class="game-btn">Basketball Stars</button>
+            <button onclick="loadGame('hexgl.html')" class="game-btn">HexGL</button>
+            <button onclick="loadGame('breaklock.html')" class="game-btn">Breaklock</button>
+            <button onclick="loadGame('lawnmower.html')" class="game-btn">Lawnmower Game</button>
+            <button onclick="loadGame('minesweeper.html')" class="game-btn">Minesweeper</button>
+            <button onclick="loadGame('overflowing.html')" class="game-btn">Overflowing Palette</button>
+            <button onclick="loadGame('polytrack.html')" class="game-btn">Poly Track</button>
+            <button onclick="loadGame('slope.html')" class="game-btn">Slope</button>
+            <button onclick="loadGame('snake.html')" class="game-btn">Play Snake</button>
+            <button onclick="loadGame('snowrider.html')" class="game-btn">Snow Rider 3D</button>
+            <button onclick="loadGame('tetris.html')" class="game-btn">Tetris</button>
         </div>
     </div>
 
     <div id="main-view">
+        <div id="panic-layer">
+            <img src="https://ssl.gstatic.com/docs/doclist/images/empty_state_my_drive_v2.png" style="width: 300px;">
+            <h1 style="color: #5f6368; font-family: sans-serif; font-weight: 400;">A place for all of your files</h1>
+        </div>
+
         <button id="restore-btn" class="ctrl-btn" onclick="toggleFullScreen()">Show Menu</button>
-        <iframe name="display" src="about:blank" allowfullscreen></iframe>
+        <div id="iframe-container" style="width:100%; height:100%;">
+            <iframe id="game-iframe" src="about:blank"></iframe>
+        </div>
     </div>
 
     <script>
-        // 1. Theme Logic
-        function changeTheme(themeName) {
-            document.body.setAttribute('data-theme', themeName);
+        // IFRAME KILLER: Frees up RAM when switching games
+        function loadGame(url) {
+            const container = document.getElementById('iframe-container');
+            container.innerHTML = ''; 
+            const newFrame = document.createElement('iframe');
+            newFrame.id = "game-iframe";
+            newFrame.src = url;
+            newFrame.setAttribute('allowfullscreen', '');
+            container.appendChild(newFrame);
+            setTimeout(() => { newFrame.focus(); }, 300);
         }
 
-        // 2. Full Screen Logic
+        // PANIC & ALL-KEYS PROTECTION
+        window.addEventListener("keydown", function(e) {
+            // TRIGGER: The Plus (+) Key
+            // We check for 'Equal' (main keyboard +) and 'NumpadAdd'
+            if (e.code === "Equal" || e.code === "NumpadAdd") {
+                const panic = document.getElementById('panic-layer');
+                const isHiding = (panic.style.display !== "flex");
+                panic.style.display = isHiding ? "flex" : "none";
+                
+                // If hiding games, kill the audio/gameplay instantly
+                if(isHiding) loadGame('about:blank');
+            }
+
+            if (document.activeElement.id === "search-bar") return;
+            if (e.key !== "F12") e.preventDefault();
+        }, false);
+
+        function changeTheme(themeName) { document.body.setAttribute('data-theme', themeName); }
+
         function toggleFullScreen() {
             const sidebar = document.getElementById('sidebar');
             const restoreBtn = document.getElementById('restore-btn');
@@ -160,39 +158,13 @@
             restoreBtn.style.display = sidebar.classList.contains('hidden') ? 'block' : 'none';
         }
 
-        // 3. SEARCH/FILTER LOGIC
         function filterGames() {
             const input = document.getElementById('search-bar').value.toLowerCase();
             const buttons = document.getElementsByClassName('game-btn');
-            
-            for (let i = 0; i < buttons.length; i++) {
-                const gameName = buttons[i].textContent.toLowerCase();
-                if (gameName.includes(input)) {
-                    buttons[i].style.display = "block";
-                } else {
-                    buttons[i].style.display = "none";
-                }
+            for (let b of buttons) {
+                b.style.display = b.textContent.toLowerCase().includes(input) ? "block" : "none";
             }
         }
-
-        // 4. ALL-KEYS INPUT PROTECTION (Excluding the Search Bar)
-        window.addEventListener("keydown", function(e) {
-            // Check if the user is currently typing in the search bar
-            if (document.activeElement.id === "search-bar") return;
-
-            if (e.key !== "F12") {
-                e.preventDefault();
-            }
-        }, false);
-
-        // 5. AUTO-FOCUS GAME
-        document.querySelectorAll('.game-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                setTimeout(() => {
-                    document.querySelector('iframe').focus();
-                }, 200);
-            });
-        });
     </script>
 </body>
 </html>
