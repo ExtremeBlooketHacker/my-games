@@ -6,25 +6,25 @@
     
     <style>
         :root {
+            /* Default: Midnight Dark */
             --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0;
             --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff;
-            --cursor: default;
         }
 
-        /* THEME SELECTIONS WITH CUSTOM CURSORS */
-        [data-theme="dark"] { --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0; --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff; --cursor: default; }
-        [data-theme="femboy"] { --bg-color: #F8F7BA; --sidebar-bg: #F5D2D2; --text-color: #5a5a5a; --btn-bg: #BDE3C3; --btn-border: #A3CCDA; --accent: #A3CCDA; --cursor: cell; }
-        [data-theme="peach"] { --bg-color: #FBEF76; --sidebar-bg: #FEC288; --text-color: #FA5C5C; --btn-bg: #fdf0d5; --btn-border: #FD8A6B; --accent: #FA5C5C; --cursor: pointer; }
-        [data-theme="winter"] { --bg-color: #050b14; --sidebar-bg: #0a1421; --text-color: #00f2ff; --btn-bg: #102136; --btn-border: #00d9ff; --accent: #00f2ff; --cursor: crosshair; }
-        [data-theme="blood"] { --bg-color: #000000; --sidebar-bg: #1a0000; --text-color: #ff4d4d; --btn-bg: #2b0000; --btn-border: #800000; --accent: #ff0000; --cursor: crosshair; }
-        [data-theme="emerald"] { --bg-color: #051005; --sidebar-bg: #0a1a0a; --text-color: #7dff7d; --btn-bg: #122b12; --btn-border: #1e4d1e; --accent: #2ecc71; --cursor: default; }
-        [data-theme="cyber"] { --bg-color: #0d0221; --sidebar-bg: #0f0844; --text-color: #00f2ff; --btn-bg: #1a1b41; --btn-border: #00f2ff; --accent: #ff00ff; --cursor: help; }
+        /* THEME SELECTIONS */
+        [data-theme="dark"] { --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0; --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff; }
+        [data-theme="femboy"] { --bg-color: #F8F7BA; --sidebar-bg: #F5D2D2; --text-color: #5a5a5a; --btn-bg: #BDE3C3; --btn-border: #A3CCDA; --accent: #A3CCDA; }
+        [data-theme="peach"] { --bg-color: #FBEF76; --sidebar-bg: #FEC288; --text-color: #FA5C5C; --btn-bg: #fdf0d5; --btn-border: #FD8A6B; --accent: #FA5C5C; }
+        [data-theme="winter"] { --bg-color: #050b14; --sidebar-bg: #0a1421; --text-color: #00f2ff; --btn-bg: #102136; --btn-border: #00d9ff; --accent: #00f2ff; }
+        [data-theme="blood"] { --bg-color: #000000; --sidebar-bg: #1a0000; --text-color: #ff4d4d; --btn-bg: #2b0000; --btn-border: #800000; --accent: #ff0000; }
+        [data-theme="emerald"] { --bg-color: #051005; --sidebar-bg: #0a1a0a; --text-color: #7dff7d; --btn-bg: #122b12; --btn-border: #1e4d1e; --accent: #2ecc71; }
+        [data-theme="cyber"] { --bg-color: #0d0221; --sidebar-bg: #0f0844; --text-color: #00f2ff; --btn-bg: #1a1b41; --btn-border: #00f2ff; --accent: #ff00ff; }
 
         body { 
             margin: 0; display: flex; height: 100vh; width: 100vw;
             font-family: 'Segoe UI', sans-serif; overflow: hidden; 
             background-color: var(--bg-color); color: var(--text-color);
-            transition: all 0.2s ease; cursor: var(--cursor);
+            transition: background-color 0.2s;
         }
 
         #sidebar {
@@ -43,37 +43,29 @@
         }
 
         .game-btn {
-            padding: 12px; text-decoration: none; border-radius: 8px;
-            text-align: center; transition: 0.2s; font-weight: bold;
+            padding: 12px; border-radius: 8px; text-align: center; 
+            transition: 0.2s; font-weight: bold; border: 1px solid var(--btn-border);
             background-color: var(--btn-bg); color: var(--text-color);
-            border: 1px solid var(--btn-border); cursor: inherit;
-            width: 100%; display: block; margin-bottom: 5px;
+            width: 100%; display: block; margin-bottom: 5px; cursor: pointer;
         }
 
-        .game-btn:hover { background-color: var(--accent); color: white; transform: translateY(-2px); }
+        .game-btn:hover { background-color: var(--accent); color: white; }
 
         .ctrl-btn {
             padding: 8px; cursor: pointer; border-radius: 5px; border: none;
             background: var(--accent); color: white; font-weight: bold;
         }
 
-        #main-view { flex-grow: 1; height: 100vh; position: relative; background: #fff; }
+        #main-view { flex-grow: 1; height: 100vh; position: relative; background: #000; }
         
-        /* PANIC LAYER: Google Drive Fake-out */
-        #panic-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; display: none; z-index: 9999;
-            flex-direction: column; justify-content: center; align-items: center;
-        }
-
-        #restore-btn { position: absolute; top: 10px; left: 10px; z-index: 1000; display: none; opacity: 0.8; }
+        #restore-btn { position: absolute; top: 10px; left: 10px; z-index: 1000; display: none; }
         iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body data-theme="dark">
 
     <div id="sidebar">
-        <h2>Appearance</h2>
+        <h2>Settings</h2>
         <select id="theme-select" onchange="changeTheme(this.value)">
             <option value="dark">Midnight Dark</option>
             <option value="femboy">Pastel Femboy</option>
@@ -108,11 +100,6 @@
     </div>
 
     <div id="main-view">
-        <div id="panic-layer">
-            <img src="https://ssl.gstatic.com/docs/doclist/images/empty_state_my_drive_v2.png" style="width: 300px;">
-            <h1 style="color: #5f6368; font-family: sans-serif; font-weight: 400;">A place for all of your files</h1>
-        </div>
-
         <button id="restore-btn" class="ctrl-btn" onclick="toggleFullScreen()">Show Menu</button>
         <div id="iframe-container" style="width:100%; height:100%;">
             <iframe id="game-iframe" src="about:blank"></iframe>
@@ -120,7 +107,6 @@
     </div>
 
     <script>
-        // IFRAME KILLER: Frees up RAM when switching games
         function loadGame(url) {
             const container = document.getElementById('iframe-container');
             container.innerHTML = ''; 
@@ -129,24 +115,20 @@
             newFrame.src = url;
             newFrame.setAttribute('allowfullscreen', '');
             container.appendChild(newFrame);
-            setTimeout(() => { newFrame.focus(); }, 300);
+            // Gives the game focus so keys work instantly
+            newFrame.onload = () => { newFrame.focus(); };
         }
 
-        // PANIC & ALL-KEYS PROTECTION
+        // Optimized Key Prevention
         window.addEventListener("keydown", function(e) {
-            // TRIGGER: The Plus (+) Key
-            // We check for 'Equal' (main keyboard +) and 'NumpadAdd'
-            if (e.code === "Equal" || e.code === "NumpadAdd") {
-                const panic = document.getElementById('panic-layer');
-                const isHiding = (panic.style.display !== "flex");
-                panic.style.display = isHiding ? "flex" : "none";
-                
-                // If hiding games, kill the audio/gameplay instantly
-                if(isHiding) loadGame('about:blank');
-            }
-
+            // If typing in search, let all keys work normally
             if (document.activeElement.id === "search-bar") return;
-            if (e.key !== "F12") e.preventDefault();
+
+            // Block only keys that cause browser scrolling/jumping
+            const blockList = ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab"];
+            if (blockList.includes(e.code)) {
+                e.preventDefault();
+            }
         }, false);
 
         function changeTheme(themeName) { document.body.setAttribute('data-theme', themeName); }
