@@ -1,157 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game & Chat Portal</title>
+    <title>My Drive - Google Drive</title>
+    <link rel="icon" type="image/x-icon" href="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png">
+    
     <style>
-        /* CSS Variables: The "Constants" of our theme */
         :root {
-            --bg: #121212;
-            --accent: #007bff;
-            --text: #ffffff;
-            --sidebar-bg: rgba(0, 0, 0, 0.4);
+            --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0;
+            --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff;
         }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
+        /* THEME SELECTIONS (Your original colors) */
+        [data-theme="dark"] { --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0; --btn-bg: #2d2d2d; --btn-border: #404040; --accent: #007bff; }
+        [data-theme="femboy"] { --bg-color: #F8F7BA; --sidebar-bg: #F5D2D2; --text-color: #5a5a5a; --btn-bg: #BDE3C3; --btn-border: #A3CCDA; --accent: #A3CCDA; }
+        [data-theme="peach"] { --bg-color: #FBEF76; --sidebar-bg: #FEC288; --text-color: #FA5C5C; --btn-bg: #fdf0d5; --btn-border: #FD8A6B; --accent: #FA5C5C; }
+        [data-theme="winter"] { --bg-color: #050b14; --sidebar-bg: #0a1421; --text-color: #00f2ff; --btn-bg: #102136; --btn-border: #00d9ff; --accent: #00f2ff; }
+        [data-theme="blood"] { --bg-color: #000000; --sidebar-bg: #1a0000; --text-color: #ff4d4d; --btn-bg: #2b0000; --btn-border: #800000; --accent: #ff0000; }
+        [data-theme="emerald"] { --bg-color: #051005; --sidebar-bg: #0a1a0a; --text-color: #7dff7d; --btn-bg: #122b12; --btn-border: #1e4d1e; --accent: #2ecc71; }
+        [data-theme="cyber"] { --bg-color: #0d0221; --sidebar-bg: #0f0844; --text-color: #00f2ff; --btn-bg: #1a1b41; --btn-border: #00f2ff; --accent: #ff00ff; }
+
+        body { 
+            margin: 0; display: flex; height: 100vh; width: 100vw;
+            font-family: 'Segoe UI', sans-serif; overflow: hidden; 
+            background-color: var(--bg-color); color: var(--text-color);
+            transition: background-color 0.2s;
         }
 
-        /* Sidebar Navigation */
         #sidebar {
-            width: 220px;
-            background: var(--sidebar-bg);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            width: 240px; display: flex; flex-direction: column;
+            padding: 15px; gap: 12px; height: 100vh; overflow-y: auto; 
+            background-color: var(--sidebar-bg); border-right: 2px solid var(--btn-border);
+            box-sizing: border-box; transition: margin-left 0.3s ease;
         }
 
-        h2 { font-size: 1.2rem; margin-bottom: 10px; color: var(--accent); }
+        #sidebar.hidden { margin-left: -240px; }
 
-        .btn {
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            transition: 0.2s;
-            font-weight: 500;
+        select#theme-select, #search-bar {
+            padding: 10px; border-radius: 8px; border: 1px solid var(--btn-border);
+            background-color: var(--btn-bg); color: var(--text-color);
+            font-size: 0.9rem; outline: none;
         }
 
-        .btn:hover {
-            background: var(--accent);
-            color: white;
-            transform: translateX(5px);
+        .game-btn {
+            padding: 12px; border-radius: 8px; text-align: center; 
+            transition: 0.2s; font-weight: bold; border: 1px solid var(--btn-border);
+            background-color: var(--btn-bg); color: var(--text-color);
+            width: 100%; display: block; margin-bottom: 5px; cursor: pointer;
         }
 
-        /* The Viewport (Iframe) */
-        #main-view {
-            flex-grow: 1;
-            border: none;
-            background: transparent;
+        .game-btn:hover { background-color: var(--accent); color: white; }
+
+        .ctrl-btn {
+            padding: 8px; cursor: pointer; border-radius: 5px; border: none;
+            background: var(--accent); color: white; font-weight: bold;
         }
 
-        /* Theme Selector Styling */
-        .theme-container {
-            margin-top: auto;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            background: #222;
-            color: white;
-            border: 1px solid #444;
-            border-radius: 5px;
-            outline: none;
-        }
+        #main-view { flex-grow: 1; height: 100vh; position: relative; background-color: var(--bg-color); }
+        #iframe-container { width:100%; height:100%; }
+        #restore-btn { position: absolute; top: 10px; left: 10px; z-index: 1000; display: none; }
+        iframe { width: 100%; height: 100%; border: none; background: transparent; }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
-<div id="sidebar">
-    <h2>Main Menu</h2>
-    <button class="btn" onclick="loadContent('chat.html')">💬 Global Chat</button>
-    <button class="btn" onclick="loadContent('retro-bowl.html')">🏈 Retro Bowl</button>
-    
-    <div class="theme-container">
-        <label style="font-size: 0.8rem; opacity: 0.8;">Choose Aesthetic:</label>
-        <select onchange="setTheme(this.value)">
-            <option value="dark">Midnight Blue</option>
-            <option value="forest">Forest Green</option>
-            <option value="sunset">Sunset Orange</option>
-            <option value="matrix">Matrix Code</option>
+    <div id="sidebar">
+        <h2>Appearance</h2>
+        <select id="theme-select" onchange="changeTheme(this.value)">
+            <option value="dark">Midnight Dark</option>
+            <option value="femboy">Pastel Femboy</option>
+            <option value="peach">Sunset Peach</option>
+            <option value="winter">Winter Frost</option>
+            <option value="blood">Blood Red</option>
+            <option value="emerald">Emerald Forest</option>
+            <option value="cyber">Cyberpunk</option>
         </select>
-    </div>
-</div>
-
-<iframe id="main-view" src="chat.html"></iframe>
-
-<script>
-    // Theme Definitions: Think of these as coordinate points (R, G, B)
-    const themes = {
-        dark: { bg: "#121212", accent: "#007bff", text: "#ffffff" },
-        forest: { bg: "#0b1a0e", accent: "#28a745", text: "#e0ffe0" },
-        sunset: { bg: "#1a0b0b", accent: "#ff4500", text: "#ffe0e0" },
-        matrix: { bg: "#000000", accent: "#00ff41", text: "#00ff41" }
-    };
-
-    // Function to swap content
-    function loadContent(url) {
-        document.getElementById('main-view').src = url;
-    }
-
-    // Function to apply theme and broadcast to iframe
-    function setTheme(themeName) {
-        const theme = themes[themeName];
-        const root = document.documentElement;
         
-        // 1. Update the Portal (Current Frame)
-        root.style.setProperty('--bg', theme.bg);
-        root.style.setProperty('--accent', theme.accent);
-        root.style.setProperty('--text', theme.text);
+        <button class="ctrl-btn" onclick="toggleFullScreen()" style="margin-top:5px;">Full Screen</button>
+        
+        <hr style="width:100%; border: 0; border-top: 1px solid var(--btn-border);">
+        
+        <h2>Social</h2>
+        <button onclick="loadGame('chat.html')" class="game-btn" style="background-color: var(--accent); color: white;">💬 Global Chat</button>
 
-        // 2. Save choice so it persists on refresh
-        localStorage.setItem('selected-theme', JSON.stringify(theme));
+        <hr style="width:100%; border: 0; border-top: 1px solid var(--btn-border);">
 
-        // 3. The "Broadcaster": Send data to the chat/game iframe
-        const iframe = document.getElementById('main-view');
-        if (iframe && iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-                type: 'theme-update',
-                theme: theme
-            }, '*');
+        <h2>Find Game</h2>
+        <input type="text" id="search-bar" placeholder="Search games..." onkeyup="filterGames()">
+
+        <div id="game-list">
+            <button onclick="loadGame('2048.html')" class="game-btn">2048</button>
+            <button onclick="loadGame('basketball.html')" class="game-btn">Basketball Stars</button>
+            <button onclick="loadGame('hexgl.html')" class="game-btn">HexGL</button>
+            <button onclick="loadGame('breaklock.html')" class="game-btn">Breaklock</button>
+            <button onclick="loadGame('lawnmower.html')" class="game-btn">Lawnmower Game</button>
+            <button onclick="loadGame('minesweeper.html')" class="game-btn">Minesweeper</button>
+            <button onclick="loadGame('overflowing.html')" class="game-btn">Overflowing Palette</button>
+            <button onclick="loadGame('polytrack.html')" class="game-btn">Poly Track</button>
+            <button onclick="loadGame('slope.html')" class="game-btn">Slope</button>
+            <button onclick="loadGame('snake.html')" class="game-btn">Play Snake</button>
+            <button onclick="loadGame('snowrider.html')" class="game-btn">Snow Rider 3D</button>
+            <button onclick="loadGame('tetris.html')" class="game-btn">Tetris</button>
+        </div>
+    </div>
+
+    <div id="main-view">
+        <button id="restore-btn" class="ctrl-btn" onclick="toggleFullScreen()">Show Menu</button>
+        <div id="iframe-container">
+            <iframe id="game-iframe" src="chat.html"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function loadGame(url) {
+            const iframe = document.getElementById('game-iframe');
+            iframe.src = url;
+            iframe.onload = () => { 
+                iframe.focus();
+                // Send current theme to chat room whenever it loads
+                syncThemeWithIframe();
+            };
         }
-    }
 
-    // Initial Setup: Check if user has a saved theme
-    window.onload = () => {
-        const saved = localStorage.getItem('selected-theme');
-        if(saved) {
-            const theme = JSON.parse(saved);
-            const root = document.documentElement;
-            root.style.setProperty('--bg', theme.bg);
-            root.style.setProperty('--accent', theme.accent);
-            root.style.setProperty('--text', theme.text);
+        function changeTheme(themeName) { 
+            document.body.setAttribute('data-theme', themeName); 
+            localStorage.setItem('user-theme-choice', themeName);
+            syncThemeWithIframe();
         }
-    };
-</script>
 
+        function syncThemeWithIframe() {
+            const iframe = document.getElementById('game-iframe');
+            if (iframe && iframe.contentWindow) {
+                // Get the computed colors of the body based on the theme
+                const styles = getComputedStyle(document.body);
+                const themeData = {
+                    bg: styles.getPropertyValue('--bg-color').trim(),
+                    accent: styles.getPropertyValue('--accent').trim(),
+                    text: styles.getPropertyValue('--text-color').trim()
+                };
+                
+                iframe.contentWindow.postMessage({
+                    type: 'theme-update',
+                    theme: themeData
+                }, '*');
+            }
+        }
+
+        function toggleFullScreen() {
+            const sidebar = document.getElementById('sidebar');
+            const restoreBtn = document.getElementById('restore-btn');
+            sidebar.classList.toggle('hidden');
+            restoreBtn.style.display = sidebar.classList.contains('hidden') ? 'block' : 'none';
+        }
+
+        function filterGames() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const buttons = document.getElementsByClassName('game-btn');
+            for (let b of buttons) {
+                b.style.display = b.textContent.toLowerCase().includes(input) ? "block" : "none";
+            }
+        }
+
+        // Persistence: Load theme on refresh
+        window.onload = () => {
+            const saved = localStorage.getItem('user-theme-choice');
+            if(saved) {
+                document.body.setAttribute('data-theme', saved);
+                document.getElementById('theme-select').value = saved;
+            }
+        };
+
+        // Prevent game keys from scrolling the page
+        window.addEventListener("keydown", function(e) {
+            if (document.activeElement.id === "search-bar") return;
+            const blockList = ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab"];
+            if (blockList.includes(e.code)) { e.preventDefault(); }
+        }, false);
+    </script>
 </body>
 </html>
