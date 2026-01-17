@@ -107,6 +107,9 @@
         if(cmd.data.action === 'clear') document.getElementById('chat-box').innerHTML = "";
         if(cmd.data.action === 'freeze') input.disabled = true;
         if(cmd.data.action === 'unfreeze') input.disabled = false;
+        if(cmd.data.action === 'alert') {
+            alert("ADMIN MESSAGE: " + cmd.data.message);
+        }
         if(cmd.data.action === 'party') {
             let i = 0, colors = ['red', 'green', 'blue', 'yellow'];
             let loop = setInterval(() => {
