@@ -35,7 +35,7 @@
     const sessionStart = Date.now();
     let myName = localStorage.getItem('chat-name') || "User" + Math.floor(Math.random() * 999);
 
-    // Initializing Ably - Simple Connection (No Rewind)
+    // Initializing Ably
     const ably = new Ably.Realtime({
         key: 'EEkkWA.G6icog:T0iJzeqrPkW15N9A7JANivEDFWkKrTp2XmPlXoAzSS4',
         transports: ['xhr_polling', 'jsonp']
@@ -43,7 +43,29 @@
 
     const channel = ably.channels.get('school-chat');
 
-    // --- 1. RECEIVING MESSAGES ---
+    // --- 1. ONLINE COUNTER LOGIC ---
+    function updateCount() {
+        channel.presence.get((err, members) => {
+            if (!err && members) {
+                // Updating the DOM with the set size
+                document.getElementById('count').innerText = members.length;
+            }
+        });
+    }
+
+    ably.connection.on('connected', () => {
+        // Enter the room and start the counter
+        channel.presence.enter({ name: myName }, (err) => {
+            if(!err) updateCount();
+        });
+    });
+
+    // Subscribe to people joining/leaving
+    channel.presence.subscribe(['enter', 'leave'], () => {
+        updateCount();
+    });
+
+    // --- 2. RECEIVING MESSAGES ---
     channel.subscribe('msg', (m) => {
         const chatBox = document.getElementById('chat-box');
         const div = document.createElement('div');
@@ -53,9 +75,9 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     });
 
-    // --- 2. RECEIVING ADMIN COMMANDS ---
+    // --- 3. RECEIVING ADMIN COMMANDS ---
     channel.subscribe('admin-cmd', (cmd) => {
-        if (cmd.data.sentAt < sessionStart) return; // Prevent old commands
+        if (cmd.data.sentAt < sessionStart) return;
         
         const data = cmd.data;
         const input = document.getElementById('msg-input');
@@ -65,10 +87,10 @@
         if (data.action === 'freeze') input.disabled = true;
         if (data.action === 'unfreeze') input.disabled = false;
         
-        // Nickname command logic
         if (data.action === 'nick' && myName === data.target) {
             myName = data.newName;
             localStorage.setItem('chat-name', myName);
+            channel.presence.update({ name: myName }); // Sync the new name to the counter
             alert("Name updated to: " + myName);
         }
 
@@ -81,13 +103,12 @@
         }
     });
 
-    // --- 3. SENDING LOGIC ---
+    // --- 4. SENDING LOGIC ---
     function send() {
         const input = document.getElementById('msg-input');
         const val = input.value.trim();
         if (!val) return;
 
-        // Admin Command Pattern: /command password target/msg newName
         if (val.startsWith('/')) {
             const p = val.split(' ');
             const cmd = p[0].replace('/', '');
@@ -103,24 +124,18 @@
             }
         }
 
-        // Standard Message
         channel.publish('msg', { user: myName, text: val });
         input.value = "";
     }
 
-    // --- 4. EXTRAS ---
-    channel.presence.enter({ name: myName });
-    function updateCount() {
-        channel.presence.get((err, m) => { if(!err) document.getElementById('count').innerText = m.length; });
-    }
-    channel.presence.subscribe(['enter', 'leave'], updateCount);
-    setInterval(updateCount, 5000);
-
     function changeName() {
         let n = prompt("New Name:", myName);
-        if(n) { myName = n; localStorage.setItem('chat-name', n); }
+        if(n) { 
+            myName = n; 
+            localStorage.setItem('chat-name', n);
+            channel.presence.update({ name: myName });
+        }
     }
 </script>
-
 </body>
 </html>
