@@ -24,7 +24,7 @@
     <div style="background:var(--accent); color:white; padding:3px 10px; border-radius:15px; font-size:0.75rem;">
         Online: <span id="count">1</span>
     </div>
-    <button onclick="changeName()" style="font-size:0.7rem; background:rgba(255,255,255,0.1);">Edit Name</button>
+    <button onclick="changeName()" style="font-size:0.7rem; background:rgba(255,255,255,0.1); color:white; border:none; padding:5px; border-radius:4px; cursor:pointer;">Edit Name</button>
 </div>
 
 <div id="chat-box"></div>
@@ -49,7 +49,6 @@
                 document.documentElement.style.setProperty('--text', saved.text);
             }
         } catch (err) {
-            // If data is corrupted, clear it and refresh
             localStorage.removeItem('selected-theme');
             location.reload();
         }
@@ -66,7 +65,9 @@
         clientId: uniqueId,
         transports: ['xhr_polling', 'jsonp']
     });
-    const channel = ably.channels.get('school-chat', { params: { rewind: '30' } });
+
+    // UPDATED: Changed rewind to '1d' for 24 hours of history
+    const channel = ably.channels.get('school-chat', { params: { rewind: '1d' } });
 
     let myName = localStorage.getItem('chat-name') || "User" + Math.floor(Math.random() * 999);
 
@@ -105,11 +106,9 @@
         const input = document.getElementById('msg-input');
         
         if(cmd.data.action === 'clear') document.getElementById('chat-box').innerHTML = "";
-        if(cmd.data.action === 'freeze') input.disabled = true;
-        if(cmd.data.action === 'unfreeze') input.disabled = false;
-        if(cmd.data.action === 'alert') {
-            alert("ADMIN MESSAGE: " + cmd.data.message);
-        }
+        if(cmd.data.action === 'freeze') { input.disabled = true; input.placeholder = "Frozen..."; }
+        if(cmd.data.action === 'unfreeze') { input.disabled = false; input.placeholder = "Type..."; }
+        if(cmd.data.action === 'alert') { alert("ADMIN: " + cmd.data.message); }
         if(cmd.data.action === 'party') {
             let i = 0, colors = ['red', 'green', 'blue', 'yellow'];
             let loop = setInterval(() => {
