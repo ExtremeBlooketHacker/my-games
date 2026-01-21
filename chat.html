@@ -65,37 +65,39 @@
 
     const channel = ably.channels.get('school-chat');
 
-    // 3. THE "FORCE" COUNTER
-    // This function manually counts every member in the presence set
+    // 3. THE "RESILIENT" COUNTER
     function updateCount() {
         channel.presence.get((err, members) => {
-            if (err) {
-                console.error("Presence Error:", err);
-                return;
-            }
-            // Math: Count = Size of the Set
-            const count = members.length || 0;
+            if (err) return;
+            // Force the count to at least 1 if you are connected
+            const count = members.length > 0 ? members.length : 1; 
             document.getElementById('count').innerText = count;
         });
     }
 
+    // Force Enter Logic
     ably.connection.on('connected', () => {
         document.getElementById('msg-input').placeholder = "Connected!";
         
-        // Enter the presence set
-        channel.presence.enter({ name: myName }, (err) => {
-            if (err) console.error("Could not enter presence");
-            updateCount();
-        });
+        // Keep trying to enter until successful
+        const enterRoom = () => {
+            channel.presence.enter({ name: myName }, (err) => {
+                if (err) {
+                    setTimeout(enterRoom, 1000); // Retry in 1s if failed
+                } else {
+                    updateCount();
+                }
+            });
+        };
+        enterRoom();
     });
 
-    // Listen for any change in the room
+    // Event Listeners for other people
     channel.presence.subscribe('enter', updateCount);
     channel.presence.subscribe('leave', updateCount);
-    channel.presence.subscribe('update', updateCount);
-
-    // HEARTBEAT: Force a refresh every 5 seconds in case school Wi-Fi drops packets
-    setInterval(updateCount, 5000);
+    
+    // Safety Heartbeat
+    setInterval(updateCount, 3000);
 
     // 4. MESSAGES & ADMIN
     channel.subscribe('msg', (m) => {
@@ -141,7 +143,13 @@
             const p = val.split(' ');
             const cmd = p[0].replace('/', '');
             if (p[1] === ADMIN_PASS) {
-                channel.publish('admin-cmd', { action: cmd, target: p[2], newName: p[3], message: p.slice(2).join(' '), sentAt: Date.now() });
+                channel.publish('admin-cmd', { 
+                    action: cmd, 
+                    target: p[2], 
+                    newName: p[3], 
+                    message: p.slice(2).join(' '), 
+                    sentAt: Date.now() 
+                });
                 input.value = ""; return;
             }
         }
@@ -151,7 +159,11 @@
 
     function changeName() {
         let n = prompt("New Name:", myName);
-        if(n) { myName = n; localStorage.setItem('chat-name', n); channel.presence.update({ name: myName }); }
+        if(n) { 
+            myName = n; 
+            localStorage.setItem('chat-name', n); 
+            channel.presence.update({ name: myName }); 
+        }
     }
 </script>
 </body>
